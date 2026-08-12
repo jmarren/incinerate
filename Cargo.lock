@@ -3200,6 +3200,7 @@ name = "incinerate"
 version = "0.1.0"
 dependencies = [
  "burn",
+ "ndarray 0.17.2",
 ]
 
 [[package]]
