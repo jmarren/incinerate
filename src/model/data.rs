@@ -1,9 +1,10 @@
-use std::io::Cursor;
+use std::{fs::File, io::Cursor, path::Path};
 
 use burn::{
     data::{dataloader::batcher::Batcher, dataset::vision::MnistItem},
     prelude::*,
 };
+use png::{BitDepth, ColorType, Encoder};
 
 #[derive(Clone, Default)]
 pub struct MnistBatcher {}
@@ -49,11 +50,6 @@ impl<B: Backend> Batcher<B, MnistItem, MnistBatch<B>> for MnistBatcher {
 }
 
 const CANVAS_WIDTH: usize = 392;
-
-// fn png_decoder_from_bytes(bytes: &[u8]) -> png::Decoder<Cursor<&[u8]>> {
-//     let seeker = Cursor::new(bytes);
-//     png::Decoder::new(seeker)
-// }
 
 pub struct MnistItemBuilder {}
 
@@ -101,16 +97,6 @@ fn resize_to_mnist(bytes_matrix: Vec<&[u8]>) -> [[f32; 28]; 28] {
         y += 14;
     }
 
-    img.iter_mut().for_each(|elt| {
-        elt.iter_mut().for_each(|e| {
-            if *e == 255.0 {
-                *e = 0.0;
-            } else {
-                *e = 255.0;
-            }
-        })
-    });
-
     img
 }
 
@@ -151,5 +137,32 @@ impl MnistItemBuilder {
             // Label of the image.
             label: 7,
         }
+    }
+
+    /// Writes an `MnistItem`'s image as a 28x28 8-bit grayscale PNG, creating
+    /// (or overwriting) the file at `path`.
+    pub fn save_png(item: &MnistItem, path: impl AsRef<Path>) -> std::io::Result<()> {
+        let path = path.as_ref();
+        if let Some(parent) = path.parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+
+        let pixels: Vec<u8> = item
+            .image
+            .iter()
+            .flat_map(|row| row.iter().map(|&v| v as u8))
+            .collect();
+
+        let file = File::create(path)?;
+        let mut encoder = Encoder::new(file, 28, 28);
+        encoder.set_color(ColorType::Grayscale);
+        encoder.set_depth(BitDepth::Eight);
+
+        let mut writer = encoder.write_header().map_err(std::io::Error::other)?;
+        writer
+            .write_image_data(&pixels)
+            .map_err(std::io::Error::other)?;
+
+        Ok(())
     }
 }

@@ -13,12 +13,12 @@ pub async fn index() -> Markup {
             }
             body hx-boost="true" {
                 h1 { "Hello, World!" }
-                canvas id="draw-canvas" width="392" height="392" {}
-                input hidden id="drawing-input" name="drawing" type="text" {}
+                canvas id="draw-canvas" hx-encoding="multipart/form-data" width="392" height="392" {}
                 br {}
                 button  id="submit-button"  {
                     "Submit"
                 }
+                p { "Prediction: " span id="prediction" {} }
                 script {
                     (maud::PreEscaped(r#"
                     const canvas = document.getElementById('draw-canvas');
@@ -29,20 +29,19 @@ pub async fn index() -> Markup {
                     let drawing = false;
 
                     submitButton.onclick = () => {
-                        
-                        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-                        console.log(imgData);
-                        
+
                         canvas.toBlob((blob) =>  {
-                            console.log(blob);
-                            fetch("/drawings", {
-                                method: "POST",
-                                body: blob,
+                            const formData = new FormData();
+                            formData.append('drawing', blob, 'drawing.png');
+
+                            htmx.ajax('POST', '/drawings', {
+                                target: '#prediction',
+                                swap: 'innerHTML',
+                                source: '#draw-canvas',
+                                values: formData,
                             });
 
                         }, 'image/png');
-
-    
                     }
 
                     function pos(e) {

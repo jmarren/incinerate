@@ -5,7 +5,7 @@ use burn::{
     record::{CompactRecorder, Recorder},
 };
 
-pub fn infer<B: Backend>(artifact_dir: &str, device: B::Device, item: MnistItem) {
+pub fn infer<B: Backend>(artifact_dir: &str, device: B::Device, item: MnistItem) -> u8 {
     let config = TrainingConfig::load(format!("{artifact_dir}/config.json"))
         .expect("Config should exist for the model; run train first");
     let record = CompactRecorder::new()
@@ -14,11 +14,17 @@ pub fn infer<B: Backend>(artifact_dir: &str, device: B::Device, item: MnistItem)
 
     let model = config.model.init::<B>(&device).load_record(record);
 
-    let label = item.label;
+    // let label = item.label;
     let batcher = MnistBatcher::default();
     let batch = batcher.batch(vec![item], &device);
     let output = model.forward(batch.images);
-    let predicted = output.argmax(1).flatten::<1>(0, 1).into_scalar();
+    let predicted = output
+        .argmax(1)
+        .flatten::<1>(0, 1)
+        .into_scalar()
+        .to_string();
 
-    println!("Predicted {predicted} Expected {label}");
+    let out: u8 = predicted.parse().unwrap();
+
+    out
 }
