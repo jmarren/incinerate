@@ -22,7 +22,10 @@ enum Action {
 }
 
 fn main() {
+    // use Wgpu as backend
     type MyBackend = Wgpu<f32, i32>;
+    // create an Autodiff type that decorates the backend to allow for autodiff
+    // (automatic differentiation)
     type MyAutodiffBackend = Autodiff<MyBackend>;
 
     let device = burn::backend::wgpu::WgpuDevice::default();
@@ -30,12 +33,6 @@ fn main() {
 
     let args = Cli::parse();
     println!("args = {:?}", args);
-
-    // let forty_four = burn::data::dataset::vision::MnistDataset::test()
-    //     .get(44)
-    //     .unwrap();
-
-    // println!("
 
     match args.action {
         Action::Train => {

@@ -72,15 +72,21 @@ fn create_artifact_dir(artifact_dir: &str) {
 }
 
 pub fn train<B: AutodiffBackend>(artifact_dir: &str, config: TrainingConfig, device: B::Device) {
+    // create directory to store artifacts
     create_artifact_dir(artifact_dir);
+
+    // save configuation
     config
         .save(format!("{artifact_dir}/config.json"))
         .expect("Config should be saved successfully");
 
+    // seed the backend
     B::seed(&device, config.seed);
 
+    // create a batcher
     let batcher = MnistBatcher::default();
 
+    // build a data loader
     let dataloader_train = DataLoaderBuilder::new(batcher.clone())
         .batch_size(config.batch_size)
         .shuffle(config.seed)
@@ -93,13 +99,17 @@ pub fn train<B: AutodiffBackend>(artifact_dir: &str, config: TrainingConfig, dev
         .num_workers(config.num_workers)
         .build(MnistDataset::test());
 
+    // create SupervisedTraining
     let training = SupervisedTraining::new(artifact_dir, dataloader_train, dataloader_test)
         .metrics((AccuracyMetric::new(), LossMetric::new()))
         .with_file_checkpointer(CompactRecorder::new())
         .num_epochs(config.num_epochs)
         .summary();
 
+    // initialize the model
     let model = config.model.init::<B>(&device);
+
+    // launch the training using the model, optimizer, and learning rate
     let result = training.launch(Learner::new(
         model,
         config.optimizer.init(),

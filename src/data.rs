@@ -16,10 +16,14 @@ pub struct MnistBatch<B: Backend> {
 
 impl<B: Backend> Batcher<B, MnistItem, MnistBatch<B>> for MnistBatcher {
     fn batch(&self, items: Vec<MnistItem>, device: &B::Device) -> MnistBatch<B> {
+        // for each item
         let images = items
             .iter()
+            // map the image to a tensor and convert the elements to floats
             .map(|item| TensorData::from(item.image).convert::<B::FloatElem>())
+            // create a tensor from the data for the device
             .map(|data| Tensor::<B, 2>::from_data(data, device))
+            // reshape the tensor to 1x28x28
             .map(|tensor| tensor.reshape([1, 28, 28]))
             // Normalize: scale between [0,1] and make the mean=0 and std=1
             // values mean=0.1307,std=0.3081 are from the PyTorch MNIST example
@@ -27,13 +31,16 @@ impl<B: Backend> Batcher<B, MnistItem, MnistBatch<B>> for MnistBatcher {
             .map(|tensor| ((tensor / 255) - 0.1307) / 0.3081)
             .collect();
 
+        // for each item
         let targets = items
             .iter()
+            // map the item to a 1D tensor
             .map(|item| {
                 Tensor::<B, 1, Int>::from_data([(item.label as i64).elem::<B::IntElem>()], device)
             })
             .collect();
 
+        // concatenate the tensors into one tensor along the 0 dimension
         let images = Tensor::cat(images, 0);
         let targets = Tensor::cat(targets, 0);
 
