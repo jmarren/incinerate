@@ -8,7 +8,7 @@ use burn::{
 };
 
 #[derive(Module, Debug)]
-pub struct Model<B: Backend> {
+pub struct Network<B: Backend> {
     conv1: Conv2d<B>,
     conv2: Conv2d<B>,
     pool: AdaptiveAvgPool2d,
@@ -18,7 +18,7 @@ pub struct Model<B: Backend> {
     activation: Relu,
 }
 
-impl<B: Backend> Model<B> {
+impl<B: Backend> Network<B> {
     /// # Shapes
     ///   - Images [batch_size, height, width]
     ///   - Output [batch_size, num_classes]
@@ -45,7 +45,7 @@ impl<B: Backend> Model<B> {
 }
 
 #[derive(Config, Debug)]
-pub struct ModelConfig {
+pub struct NetworkConfig {
     num_classes: usize,
     hidden_size: usize,
     #[config(default = "0.5")]
@@ -58,10 +58,10 @@ pub struct ModelConfig {
     dropout: f64,
 }
 
-impl ModelConfig {
+impl NetworkConfig {
     /// Returns the initialized model.
-    pub fn init<B: Backend>(&self, device: &B::Device) -> Model<B> {
-        Model {
+    pub fn init<B: Backend>(&self, device: &B::Device) -> Network<B> {
+        Network {
             conv1: Conv2dConfig::new([1, 8], [3, 3]).init(device),
             conv2: Conv2dConfig::new([8, 16], [3, 3]).init(device),
             pool: AdaptiveAvgPool2dConfig::new([8, 8]).init(),

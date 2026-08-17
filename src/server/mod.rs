@@ -1,6 +1,6 @@
 mod markup;
 
-use crate::data::MnistItemBuilder;
+use crate::model::data::MnistItemBuilder;
 use axum::{
     Router,
     routing::{get, post},
@@ -19,7 +19,7 @@ async fn accept_drawing(body: axum::body::Bytes) {
 
     type MyBackend = Wgpu<f32, i32>;
     let device = burn::backend::wgpu::WgpuDevice::default();
-    crate::inference::infer::<MyBackend>("/tmp/guide", device, item);
+    crate::model::inference::infer::<MyBackend>("/tmp/guide", device, item);
 }
 
 pub async fn start_server() {
@@ -27,9 +27,7 @@ pub async fn start_server() {
         .route("/", get(markup::index))
         .route("/drawings", post(accept_drawing));
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000")
-        .await
-        .unwrap();
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     println!("listening on http://{}", listener.local_addr().unwrap());
 
     axum::serve(listener, app).await.unwrap();

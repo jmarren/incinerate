@@ -1,6 +1,6 @@
-use crate::{
+use crate::model::{
+    Network, NetworkConfig,
     data::{MnistBatch, MnistBatcher},
-    model::{Model, ModelConfig},
 };
 use burn::{
     data::{dataloader::DataLoaderBuilder, dataset::vision::MnistDataset},
@@ -15,7 +15,7 @@ use burn::{
     },
 };
 
-impl<B: Backend> Model<B> {
+impl<B: Backend> Network<B> {
     pub fn forward_classification(
         &self,
         images: Tensor<B, 3>,
@@ -29,7 +29,7 @@ impl<B: Backend> Model<B> {
         ClassificationOutput::new(loss, output, targets)
     }
 }
-impl<B: AutodiffBackend> TrainStep for Model<B> {
+impl<B: AutodiffBackend> TrainStep for Network<B> {
     type Input = MnistBatch<B>;
     type Output = ClassificationOutput<B>;
 
@@ -40,7 +40,7 @@ impl<B: AutodiffBackend> TrainStep for Model<B> {
     }
 }
 
-impl<B: Backend> InferenceStep for Model<B> {
+impl<B: Backend> InferenceStep for Network<B> {
     type Input = MnistBatch<B>;
     type Output = ClassificationOutput<B>;
 
@@ -51,7 +51,7 @@ impl<B: Backend> InferenceStep for Model<B> {
 
 #[derive(Config, Debug)]
 pub struct TrainingConfig {
-    pub model: ModelConfig,
+    pub model: NetworkConfig,
     pub optimizer: AdamConfig,
     #[config(default = 10)]
     pub num_epochs: usize,
