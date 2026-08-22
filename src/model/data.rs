@@ -65,31 +65,26 @@ fn resize_to_mnist(bytes_matrix: Vec<&[u8]>) -> [[f32; 28]; 28] {
     let mut y = 0;
 
     let mut img = [[0.0; 28]; 28];
-    // let mut img = vec![vec![0.0; 28]; 28];
 
     while y < bytes_matrix.len() {
         let mut x = 0;
 
         while x < CANVAS_WIDTH {
-            let mut found_drawing = false;
             let new_x = x.checked_div(14).unwrap_or(0);
             let new_y = y.checked_div(14).unwrap_or(0);
 
-            'outer: for i in 0..14 {
+            let mut sum: u32 = 0;
+
+            for i in 0..14 {
                 for j in 0..14 {
                     let x1 = x + i;
                     let y1 = y + j;
 
-                    if bytes_matrix[y1][x1] != 0 {
-                        found_drawing = true;
-                        break 'outer;
-                    }
+                    sum += bytes_matrix[y1][x1] as u32;
                 }
             }
 
-            if found_drawing {
-                img[new_y][new_x] = 255.0;
-            }
+            img[new_y][new_x] = (sum as f32 / (14 * 14) as f32).round();
 
             x += 14;
         }

@@ -25,7 +25,7 @@ pub async fn index() -> Markup {
                     const submitButton = document.getElementById('submit-button');
                     const inputElt = document.getElementById('drawing-input');
                     const ctx = canvas.getContext('2d');
-                    ctx.lineWidth = 10;
+                    ctx.lineWidth = 14;
                     let drawing = false;
 
                     submitButton.onclick = () => {

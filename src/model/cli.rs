@@ -43,13 +43,17 @@ pub fn run(args: Cli) {
             );
         }
         Action::Infer => {
-            crate::model::inference::infer::<MyBackend>(
+            let test_value = burn::data::dataset::vision::MnistDataset::test()
+                .get(56)
+                .unwrap();
+
+            let result = crate::model::inference::infer::<MyBackend>(
                 artifact_dir,
                 device,
-                burn::data::dataset::vision::MnistDataset::test()
-                    .get(44)
-                    .unwrap(),
+                test_value.clone(),
             );
+
+            println!("expected = {:?}, result = {:?}", test_value.label, result);
         }
     }
 }

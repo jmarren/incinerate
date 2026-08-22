@@ -30,6 +30,7 @@ impl<B: Backend> Network<B> {
 
         let x = self.conv1.forward(x); // [batch_size, 8, _, _]
         let x = self.dropout.forward(x);
+        let x = self.activation.forward(x);
         let x = self.conv2.forward(x); // [batch_size, 16, _, _]
         let x = self.dropout.forward(x);
         let x = self.activation.forward(x);

@@ -291,6 +291,7 @@ dependencies = [
  "matchit",
  "memchr",
  "mime",
+ "multer",
  "percent-encoding",
  "pin-project-lite",
  "serde_core",
@@ -562,7 +563,7 @@ dependencies = [
  "num-traits",
  "parking_lot",
  "portable-atomic",
- "spin",
+ "spin 0.10.1",
 ]
 
 [[package]]
@@ -582,7 +583,7 @@ dependencies = [
  "rand 0.10.2",
  "rand_distr 0.6.0",
  "serde",
- "spin",
+ "spin 0.10.1",
  "thiserror 2.0.20",
 ]
 
@@ -624,7 +625,7 @@ dependencies = [
  "rmp-serde",
  "serde",
  "serde_json",
- "spin",
+ "spin 0.10.1",
  "uuid",
 ]
 
@@ -675,7 +676,7 @@ dependencies = [
  "derive-new",
  "hashbrown 0.16.1",
  "serde",
- "spin",
+ "spin 0.10.1",
 ]
 
 [[package]]
@@ -776,7 +777,7 @@ dependencies = [
  "log",
  "serde",
  "smallvec",
- "spin",
+ "spin 0.10.1",
  "tracing",
 ]
 
@@ -861,7 +862,7 @@ dependencies = [
  "burn-std",
  "hashbrown 0.16.1",
  "log",
- "spin",
+ "spin 0.10.1",
 ]
 
 [[package]]
@@ -881,7 +882,7 @@ dependencies = [
  "reqwest",
  "serde",
  "smallvec",
- "spin",
+ "spin 0.10.1",
  "tokio",
 ]
 
@@ -1553,7 +1554,7 @@ dependencies = [
  "serde",
  "serde_bytes",
  "serde_json",
- "spin",
+ "spin 0.10.1",
  "toml",
  "tracing",
  "tynm",
@@ -1770,7 +1771,7 @@ dependencies = [
  "md5",
  "serde",
  "serde_json",
- "spin",
+ "spin 0.10.1",
  "thiserror 2.0.20",
  "toml",
  "tracing",
@@ -1791,7 +1792,7 @@ dependencies = [
  "num-traits",
  "paste",
  "serde",
- "spin",
+ "spin 0.10.1",
  "variadics_please",
 ]
 
@@ -2352,6 +2353,15 @@ name = "encode_unicode"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "34aa73646ffb006b8f5147f3dc182bd4bcb190227ce861fc4a4844bf8e3cb2c0"
+
+[[package]]
+name = "encoding_rs"
+version = "0.8.35"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "75030f3c4f45dafd7586dd6780965a8c7e8e285a5ecb86713e63a79c5b2766f3"
+dependencies = [
+ "cfg-if",
+]
 
 [[package]]
 name = "entities"
@@ -3924,6 +3934,23 @@ checksum = "bb85c154ba489f01b25c0d36ae69a87e4a1c73a72631fc6c0eb6dde34a73e44b"
 dependencies = [
  "num-traits",
  "pxfm",
+]
+
+[[package]]
+name = "multer"
+version = "3.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "83e87776546dc87511aa5ee218730c92b666d7264ab6ed41f9d215af9cd5224b"
+dependencies = [
+ "bytes",
+ "encoding_rs",
+ "futures-util",
+ "http",
+ "httparse",
+ "memchr",
+ "mime",
+ "spin 0.9.9",
+ "version_check",
 ]
 
 [[package]]
@@ -5732,6 +5759,12 @@ dependencies = [
  "libc",
  "windows-sys 0.61.2",
 ]
+
+[[package]]
+name = "spin"
+version = "0.9.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3763264f6b73151db08c50ff20d7d8a0b8796e021cdea7ceedad07b80155fa0e"
 
 [[package]]
 name = "spin"
